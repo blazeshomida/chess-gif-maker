@@ -22,8 +22,9 @@ export type ColorThemeOption = SelectOption<ColorTheme | "CUSTOM">;
 export type PieceSetOption = SelectOption<string>;
 
 export type SettingsState = {
-  delay: number[];
+  delay: number;
   colors: ColorsOptionValue;
-  resolution: ResolutionOption;
-  pieceSet: PieceSetOption;
+  "color-theme": string;
+  resolution: number;
+  pieceSet: string;
 };

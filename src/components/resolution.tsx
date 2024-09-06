@@ -11,16 +11,17 @@ import {
 } from "./ui/select";
 import { useSettings } from "./settings-provider";
 import { SettingsSectionLayout } from "./section-layout";
+import { getResolutionOption } from "~/lib/utils/select-options";
 
 export function Resolution() {
   const { state, setState } = useSettings();
   return (
     <SettingsSectionLayout title="Resolution">
       <Select
-        value={state.resolution}
-        onChange={(value: ResolutionOption | null) => {
-          if (!value) return;
-          setState("resolution", value);
+        value={getResolutionOption(state.resolution)}
+        onChange={(option: ResolutionOption | null) => {
+          if (!option) return;
+          setState("resolution", option.value);
         }}
         options={RESOLUTION_OPTIONS}
         optionValue="value"

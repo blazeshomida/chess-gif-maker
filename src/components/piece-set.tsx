@@ -11,16 +11,17 @@ import {
 } from "./ui/select";
 import { useSettings } from "./settings-provider";
 import { SettingsSectionLayout } from "./section-layout";
+import { getPieceSetOption } from "~/lib/utils/select-options";
 
 export function PieceSet() {
   const { state, setState } = useSettings();
   return (
     <SettingsSectionLayout title="Piece Set">
       <Select
-        value={state.pieceSet}
-        onChange={(value) => {
-          if (value) {
-            setState("pieceSet", value);
+        value={getPieceSetOption(state.pieceSet)}
+        onChange={(option) => {
+          if (option) {
+            setState("pieceSet", option.value);
           }
         }}
         options={PIECE_SET_OPTIONS}
@@ -46,7 +47,7 @@ export function PieceSet() {
             {(pieceSvg, index) => {
               const color = () => (index() % 2 === 0 ? "light" : "dark");
               const piece = () =>
-                state.pieceSet.value === "mono" ? pieceSvg[1] : pieceSvg;
+                state.pieceSet === "mono" ? pieceSvg[1] : pieceSvg;
 
               return (
                 <div
@@ -57,7 +58,7 @@ export function PieceSet() {
                 >
                   <img
                     class="size-full"
-                    src={`/pieces/${state.pieceSet.value}/${piece()}.svg`}
+                    src={`/pieces/${state.pieceSet}/${piece()}.svg`}
                     alt=""
                   />
                 </div>

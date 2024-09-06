@@ -1,6 +1,6 @@
 import { Select as _Select } from "@kobalte/core/select";
 import { SettingsProvider } from "~/components/settings-provider";
-import { SettingsPanel } from "~/components/panel";
+import { SettingsPanel } from "~/components/settings-panel";
 import { BoardPreview } from "~/components/board-preview";
 
 export default function Home() {

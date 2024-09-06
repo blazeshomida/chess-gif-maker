@@ -7,7 +7,7 @@ import { cn } from "~/lib/utils/cn";
 export function BoardPreview() {
   let canvas: HTMLCanvasElement | undefined;
   const { state } = useSettings();
-  const size = () => state.resolution.value;
+  const size = () => state.resolution;
 
   /* Set to true to include loading delay to avoid sudden flash */
   const [loading, setLoading] = createSignal(true);

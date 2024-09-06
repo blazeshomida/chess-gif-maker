@@ -17,22 +17,21 @@ import {
 } from "./ui/select";
 import { useSettings } from "./settings-provider";
 import { SettingsSectionLayout } from "./section-layout";
+import { getColorThemeOption } from "~/lib/utils/select-options";
 
 export function Colors() {
   const { state, setState } = useSettings();
-  const [selectedColorTheme, setSelectedColorTheme] =
-    createSignal<ColorThemeOption>(DEFAULT_COLOR_THEME_OPTION);
 
   return (
     <SettingsSectionLayout title="Colors">
       <div class="grid gap-4">
         <Select
-          value={selectedColorTheme()}
-          onChange={(value) => {
-            if (!value) return;
-            setSelectedColorTheme(value);
-            if (value.value !== "CUSTOM") {
-              setState("colors", COLOR_THEMES[value.value]);
+          value={getColorThemeOption(state["color-theme"])}
+          onChange={(option) => {
+            if (!option) return;
+            setState("color-theme", option.value);
+            if (option.value !== "CUSTOM") {
+              setState("colors", COLOR_THEMES[option.value]);
             }
           }}
           options={COLOR_THEME_OPTIONS}
@@ -68,7 +67,7 @@ export function Colors() {
               value={state.colors.light}
               onInput={(e) => {
                 setState("colors", "light", e.target.value);
-                setSelectedColorTheme(CUSTOM_COLOR_THEME_OPTION);
+                setState("color-theme", CUSTOM_COLOR_THEME_OPTION.value);
               }}
             />
             <ColorPicker
@@ -76,7 +75,7 @@ export function Colors() {
               value={state.colors.dark}
               onInput={(e) => {
                 setState("colors", "dark", e.target.value);
-                setSelectedColorTheme(CUSTOM_COLOR_THEME_OPTION);
+                setState("color-theme", CUSTOM_COLOR_THEME_OPTION.value);
               }}
             />
           </div>

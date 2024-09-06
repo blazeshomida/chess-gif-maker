@@ -10,15 +10,15 @@ import { useSettings } from "./settings-provider";
 
 export function Delay() {
   const { state, setState } = useSettings();
-  const step = () => (state.delay[0] < 1000 ? 50 : 100);
+  const step = () => (state.delay < 1000 ? 50 : 100);
   return (
     <div class="grid gap-4">
       <Slider
         minValue={100}
         maxValue={5_000}
         step={step()}
-        value={state.delay}
-        onChange={(value) => {
+        value={[state.delay]}
+        onChange={([value]) => {
           if (value) setState("delay", value);
         }}
         class="grid gap-4"
