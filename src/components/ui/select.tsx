@@ -1,11 +1,11 @@
 import type { JSX, JSXElement, ValidComponent } from "solid-js";
-import { Show, splitProps } from "solid-js";
-
+import { splitProps } from "solid-js";
 import type { PolymorphicProps } from "@kobalte/core/polymorphic";
 import * as SelectPrimitive from "@kobalte/core/select";
 import { cn } from "~/lib/utils/cn";
-import type { SelectBaseSectionComponentProps } from "@kobalte/core/src/select/select-base.jsx";
 import { Separator } from "@kobalte/core/separator";
+import { createVirtualizer, type Virtualizer } from "@tanstack/solid-virtual";
+import { createSignal, For } from "solid-js";
 
 const Select = SelectPrimitive.Root;
 const SelectValue = SelectPrimitive.Value;
@@ -136,6 +136,89 @@ const SelectDescription = (props: { children: JSXElement }) => {
     </SelectPrimitive.Description>
   );
 };
+
+interface Item<T> {
+  value: T;
+  label: string;
+  disabled: boolean;
+}
+
+export function SelectContentVirtualized<T extends Item<string>>(props: {
+  options: T[];
+  class?: Partial<{
+    content: string;
+    item: string;
+  }>;
+}) {
+  const [virtualizer, setVirtualizer] =
+    createSignal<Virtualizer<HTMLUListElement, Element>>();
+  return (
+    <SelectPrimitive.Content
+      class={cn(
+        "relative z-50 min-w-32 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-80",
+        props.class?.content,
+      )}
+    >
+      <SelectPrimitive.Listbox
+        ref={(el) => {
+          setVirtualizer(
+            createVirtualizer({
+              count: props.options.length,
+              getScrollElement: () => el,
+              getItemKey: (index: number) => props.options[index].value,
+              estimateSize: () => 32,
+              scrollPaddingStart: 8,
+              scrollPaddingEnd: 8,
+              overscan: 5,
+            }),
+          );
+        }}
+        scrollToItem={(key) =>
+          virtualizer()?.scrollToIndex(
+            props.options.findIndex((option) => option.value === key),
+          )
+        }
+        class="m-0 p-1"
+        style={{ height: "200px", width: "100%", overflow: "auto" }}
+      >
+        {(items) => (
+          <div
+            style={{
+              height: `${virtualizer()?.getTotalSize()}px`,
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            <For each={virtualizer()?.getVirtualItems()}>
+              {(virtualRow) => {
+                const item = items().getItem(String(virtualRow.key));
+                if (item) {
+                  return (
+                    <SelectItem
+                      item={item}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      <SelectPrimitive.ItemLabel>
+                        {item.rawValue.label}
+                      </SelectPrimitive.ItemLabel>
+                    </SelectItem>
+                  );
+                }
+              }}
+            </For>
+          </div>
+        )}
+      </SelectPrimitive.Listbox>
+    </SelectPrimitive.Content>
+  );
+}
 
 export {
   Select,

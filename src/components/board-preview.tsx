@@ -10,7 +10,7 @@ export function BoardPreview() {
   const size = () => state.resolution.value;
 
   /* Set to true to include loading delay to avoid sudden flash */
-  const [loading, setLoading] = createSignal(false);
+  const [loading, setLoading] = createSignal(true);
   let loadingDelay = setTimeout(() => {
     if (loading()) setLoading(false);
   }, 500);

@@ -7,10 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
   SelectDescription,
+  SelectContentVirtualized,
 } from "./ui/select";
 import { useSettings } from "./settings-provider";
 import { SettingsSectionLayout } from "./section-layout";
-import { VirtualizedSelectContent } from "./select-virtualized";
 
 export function PieceSet() {
   const { state, setState } = useSettings();
@@ -24,13 +24,11 @@ export function PieceSet() {
           }
         }}
         options={PIECE_SET_OPTIONS}
+        virtualized
         optionValue="value"
         optionTextValue="label"
         optionDisabled="disabled"
         placeholder="Select a piece set..."
-        itemComponent={(props) => (
-          <SelectItem item={props.item}>{props.item.rawValue.label}</SelectItem>
-        )}
       >
         <div class="grid gap-2">
           <SelectTrigger aria-label="Piece Set">
@@ -40,7 +38,7 @@ export function PieceSet() {
           </SelectTrigger>
           <SelectDescription>Choose from a piece set.</SelectDescription>
         </div>
-        <VirtualizedSelectContent options={PIECE_SET_OPTIONS} />
+        <SelectContentVirtualized options={PIECE_SET_OPTIONS} />
       </Select>
       <div class="rounded border border-border bg-background p-4">
         <div class="grid grid-cols-3 overflow-clip rounded">
