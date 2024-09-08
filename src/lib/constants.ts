@@ -3,7 +3,6 @@ import type {
   PieceSetOption,
   ResolutionGroup,
 } from "./types";
-
 export const DEFAULT_RESOLUTION_OPTION = {
   value: 720,
   label: "720p (HD)",
@@ -117,7 +116,7 @@ export const PIECE_SET_OPTIONS: PieceSetOption[] = [
   { value: "tatiana", label: "Tatiana", disabled: false },
 ];
 
-export const PIECE_SVGS = [
+export const PIECE_SVG_SYMBOLS = [
   "bB",
   "bK",
   "bN",
@@ -131,3 +130,10 @@ export const PIECE_SVGS = [
   "wQ",
   "wR",
 ] as const;
+
+export const MONO_PIECE_SVG_SYMBOLS = ["B", "K", "N", "P", "Q", "R"] as const;
+
+export const PIECE_SET_SVGS = import.meta.glob("/src/assets/pieces/**/*.svg", {
+  query: "?raw",
+  import: "default",
+});

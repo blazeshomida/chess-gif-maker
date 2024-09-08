@@ -1,9 +1,8 @@
-import { For } from "solid-js";
-import { PIECE_SET_OPTIONS, PIECE_SVGS } from "~/lib/constants";
+import { For, Show } from "solid-js";
+import { PIECE_SET_OPTIONS, PIECE_SVG_SYMBOLS } from "~/lib/constants";
 import type { PieceSetOption } from "~/lib/types";
 import {
   Select,
-  SelectItem,
   SelectTrigger,
   SelectValue,
   SelectDescription,
@@ -12,6 +11,8 @@ import {
 import { useSettings } from "./settings-provider";
 import { SettingsSectionLayout } from "./section-layout";
 import { getPieceSetOption } from "~/lib/utils/select-options";
+import type { Color, Piece, PieceSymbol } from "chess.js";
+import { getPieceSVG, queryPieceSVG } from "~/lib/utils/board";
 
 export function PieceSet() {
   const { state, setState } = useSettings();
@@ -43,30 +44,42 @@ export function PieceSet() {
       </Select>
       <div class="rounded border border-border bg-background p-4">
         <div class="grid grid-cols-3 overflow-clip rounded">
-          <For each={PIECE_SVGS}>
-            {(pieceSvg, index) => {
-              const color = () => (index() % 2 === 0 ? "light" : "dark");
-              const piece = () =>
-                state.pieceSet === "mono" ? pieceSvg[1] : pieceSvg;
-
+          <For each={PIECE_SVG_SYMBOLS}>
+            {(pieceSymbol, index) => {
               return (
-                <div
-                  class="p-1"
-                  style={{
-                    background: state.colors[color()],
+                <Square
+                  piece={{
+                    type: pieceSymbol.at(-1)! as PieceSymbol,
+                    color: pieceSymbol.at(0)! as Color,
                   }}
-                >
-                  <img
-                    class="size-full"
-                    src={`/pieces/${state.pieceSet}/${piece()}.svg`}
-                    alt=""
-                  />
-                </div>
+                  currentColor={index() % 2 ? "dark" : "light"}
+                />
               );
             }}
           </For>
         </div>
       </div>
     </SettingsSectionLayout>
+  );
+}
+
+function Square(props: {
+  piece: Piece | null;
+  currentColor: "light" | "dark";
+}) {
+  const { state } = useSettings();
+  const query = queryPieceSVG({ piece: props.piece });
+
+  return (
+    <div
+      class="grid aspect-square size-full place-content-center p-1"
+      style={{
+        "background-color": state.colors[props.currentColor],
+      }}
+    >
+      <Show when={query.isSuccess}>
+        <span innerHTML={query.data} />
+      </Show>
+    </div>
   );
 }
