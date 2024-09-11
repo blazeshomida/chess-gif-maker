@@ -49,6 +49,12 @@
 
     color-scheme: light dark;
   }
+
+  @keyframes fade {
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 @layer base {

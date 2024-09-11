@@ -7,6 +7,7 @@ import {
   DEFAULT_RESOLUTION_OPTION,
 } from "~/lib/constants";
 import type { SettingsState } from "~/lib/types";
+import { raise } from "~/lib/utils/raise";
 
 const SettingsContext = createContext<{
   state: SettingsState;
@@ -19,7 +20,7 @@ export function SettingsProvider(props: { children: JSXElement }) {
     colors: { ...COLOR_THEMES.DEFAULT },
     resolution: DEFAULT_RESOLUTION_OPTION.value,
     pieceSet: DEFAULT_PIECE_SET_OPTION.value,
-    "color-theme": DEFAULT_COLOR_THEME_OPTION.value ,
+    "color-theme": DEFAULT_COLOR_THEME_OPTION.value,
   });
 
   return (
@@ -30,9 +31,8 @@ export function SettingsProvider(props: { children: JSXElement }) {
 }
 
 export function useSettings() {
-  const value = useContext(SettingsContext);
-  if (value === undefined) {
-    throw new Error("useConfig must be used within a ConfigProvider");
-  }
-  return value;
+  return (
+    useContext(SettingsContext) ??
+    raise("useConfig must be used within a ConfigProvider")
+  );
 }

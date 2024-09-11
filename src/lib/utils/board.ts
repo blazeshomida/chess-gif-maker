@@ -1,13 +1,10 @@
-import {
-  SQUARES,
-  type Chess,
-  type Color,
-  type PieceSymbol,
-  type Square,
-} from "chess.js";
+import { SQUARES, type Chess, type Color, type PieceSymbol } from "chess.js";
 import { PIECE_SET_SVGS } from "../constants";
 import { createQuery } from "@tanstack/solid-query";
 import { useSettings } from "~/components/settings-provider";
+import { ChessGif } from "../chess-gif";
+import { DOMParser, type Element, XMLSerializer } from "@xmldom/xmldom";
+import { raise } from "./raise";
 
 type BoardArray = ReturnType<(typeof Chess)["prototype"]["board"]>;
 type Piece = {
@@ -36,7 +33,7 @@ export function createBoard({
 
   if (context) {
     SQUARES.forEach((square) => {
-      const { x: file, y: rank } = squareToCoords(square);
+      const { x: file, y: rank } = ChessGif.squareToCoords(square);
       const piece = boardArray[rank][file];
       drawSquare({ context, file, rank, colors: { light, dark }, squareSize });
       if (piece) {
@@ -83,28 +80,19 @@ function drawSquare({
   );
 }
 
-export function getPieceSymbol(pieceSet: string, piece: Piece) {
-  return pieceSet === "mono"
-    ? `${piece.type.toUpperCase()}`
-    : `${piece.color}${piece.type.toUpperCase()}`;
-}
-
-export async function getPieceSVG({
+async function getPieceSVG({
   pieceSet,
   piece,
 }: {
   pieceSet: string;
   piece: Piece;
 }) {
-  const pieceSymbol = piece ? getPieceSymbol(pieceSet, piece) : null;
+  const pieceSymbol = piece ? ChessGif.getPieceSymbol(pieceSet, piece) : null;
   const path = `/src/assets/pieces/${pieceSet}/${pieceSymbol}.svg`;
   const content = (await PIECE_SET_SVGS[path]()) as string;
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(content, "image/svg+xml");
-  const svg = doc.querySelector("svg");
-  if (!svg) {
-    throw new Error(`SVG not found for ${path}`);
-  }
+  const doc = new DOMParser().parseFromString(content, "image/svg+xml");
+  const svg = doc.getElementsByTagName("svg")[0] as Element;
+  if (!svg) raise(`SVG not found for ${path}`);
   svg.setAttribute("width", "100%");
   svg.setAttribute("height", "100%");
   const serializer = new XMLSerializer();
@@ -159,17 +147,4 @@ async function drawPiece({
   img.onerror = (err) => {
     console.error("Error loading SVG:", err);
   };
-}
-
-export function squareToCoords(square: Square) {
-  const [file, rank] = square;
-  const x = file.charCodeAt(0) - "a".charCodeAt(0);
-  const y = 8 - parseInt(rank);
-  return { x, y };
-}
-
-export function coordsToSquare({ x, y }: { x: number; y: number }): Square {
-  const file = String.fromCharCode(x + "a".charCodeAt(0));
-  const rank = (8 - y).toString();
-  return `${file}${rank}` as Square;
 }

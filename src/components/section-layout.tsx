@@ -5,7 +5,7 @@ export function SettingsSectionLayout(props: {
   title: string;
 }) {
   return (
-    <div class="grid w-full gap-2">
+    <div class="relative grid w-full gap-2">
       <span class="text-lg font-medium">{props.title}:</span>
       {props.children}
     </div>
