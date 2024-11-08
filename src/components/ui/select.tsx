@@ -137,18 +137,13 @@ const SelectDescription = (props: { children: JSXElement }) => {
   );
 };
 
-interface Item<T> {
-  value: T;
-  label: string;
-  disabled: boolean;
-}
-
-export function SelectContentVirtualized<T extends Item<string>>(props: {
+export function SelectContentVirtualized<T extends string>(props: {
   options: T[];
   class?: Partial<{
     content: string;
     item: string;
   }>;
+  label?: (option: T) => string;
 }) {
   const [virtualizer, setVirtualizer] =
     createSignal<Virtualizer<HTMLUListElement, Element>>();
@@ -159,13 +154,13 @@ export function SelectContentVirtualized<T extends Item<string>>(props: {
         props.class?.content,
       )}
     >
-      <SelectPrimitive.Listbox
+      <SelectPrimitive.Listbox<T>
         ref={(el) => {
           setVirtualizer(
             createVirtualizer({
               count: props.options.length,
               getScrollElement: () => el,
-              getItemKey: (index: number) => props.options[index].value,
+              getItemKey: (index: number) => props.options[index],
               estimateSize: () => 32,
               scrollPaddingStart: 8,
               scrollPaddingEnd: 8,
@@ -175,7 +170,7 @@ export function SelectContentVirtualized<T extends Item<string>>(props: {
         }}
         scrollToItem={(key) =>
           virtualizer()?.scrollToIndex(
-            props.options.findIndex((option) => option.value === key),
+            props.options.findIndex((option) => option === key),
           )
         }
         class="m-0 p-1"
@@ -206,7 +201,7 @@ export function SelectContentVirtualized<T extends Item<string>>(props: {
                       }}
                     >
                       <SelectPrimitive.ItemLabel>
-                        {item.rawValue.label}
+                        {props.label?.(item.rawValue) ?? item.rawValue}
                       </SelectPrimitive.ItemLabel>
                     </SelectItem>
                   );

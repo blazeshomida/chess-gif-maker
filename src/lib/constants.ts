@@ -1,8 +1,4 @@
-import type {
-  ColorThemeOption,
-  PieceSetOption,
-  ResolutionGroup,
-} from "./types";
+import type { ResolutionGroup } from "./types";
 export const DEFAULT_RESOLUTION_OPTION = {
   value: 720,
   label: "720p (HD)",
@@ -35,27 +31,12 @@ export const RESOLUTION_OPTIONS: ResolutionGroup[] = [
   },
 ];
 
-export const CUSTOM_COLOR_THEME_OPTION: ColorThemeOption = {
-  label: "Custom",
-  value: "CUSTOM",
-  disabled: false,
+export const COLOR_THEME_OPTIONS_MAP = {
+  DEFAULT: { label: "Default (Chess.com)", disabled: false },
+  RED: { label: "Red", disabled: false },
+  PURPLE: { label: "Purple", disabled: false },
+  CUSTOM: { label: "Custom", disabled: false },
 };
-
-export const DEFAULT_COLOR_THEME_OPTION: ColorThemeOption = {
-  label: "Default (Chess.com)",
-  value: "DEFAULT",
-  disabled: false,
-};
-
-export const COLOR_THEME_OPTIONS: ColorThemeOption[] = [
-  DEFAULT_COLOR_THEME_OPTION,
-  {
-    label: "Red",
-    value: "RED",
-    disabled: false,
-  },
-  CUSTOM_COLOR_THEME_OPTION,
-];
 
 export const COLOR_THEMES = {
   DEFAULT: {
@@ -66,55 +47,51 @@ export const COLOR_THEMES = {
     light: "#F0D8BF",
     dark: "#BA5546",
   },
+  PURPLE: {
+    light: "#E2D0EC",
+    dark: "#7D5194",
+  },
 } as const;
 
-export type ColorTheme = keyof typeof COLOR_THEMES;
-
-export const DEFAULT_PIECE_SET_OPTION = {
-  value: "alpha",
-  label: "Alpha",
-  disabled: false,
-};
-
-export const PIECE_SET_OPTIONS: PieceSetOption[] = [
-  DEFAULT_PIECE_SET_OPTION,
-  { value: "anarcandy", label: "Anarcandy", disabled: false },
-  { value: "caliente", label: "Caliente", disabled: false },
-  { value: "california", label: "California", disabled: false },
-  { value: "cardinal", label: "Cardinal", disabled: false },
-  { value: "cburnett", label: "Cburnett", disabled: false },
-  { value: "celtic", label: "Celtic", disabled: false },
-  { value: "chess7", label: "Chess7", disabled: false },
-  { value: "chessnut", label: "Chessnut", disabled: false },
-  { value: "companion", label: "Companion", disabled: false },
-  { value: "cooke", label: "Cooke", disabled: false },
-  { value: "disguised", label: "Disguised", disabled: false },
-  { value: "dubrovny", label: "Dubrovny", disabled: false },
-  { value: "fantasy", label: "Fantasy", disabled: false },
-  { value: "fresca", label: "Fresca", disabled: false },
-  { value: "gioco", label: "Gioco", disabled: false },
-  { value: "governor", label: "Governor", disabled: false },
-  { value: "horsey", label: "Horsey", disabled: false },
-  { value: "icpieces", label: "Icpieces", disabled: false },
-  { value: "kiwen-suwi", label: "Kiwen Suwi", disabled: false },
-  { value: "kosal", label: "Kosal", disabled: false },
-  { value: "leipzig", label: "Leipzig", disabled: false },
-  { value: "letter", label: "Letter", disabled: false },
-  { value: "libra", label: "Libra", disabled: false },
-  { value: "maestro", label: "Maestro", disabled: false },
-  { value: "merida", label: "Merida", disabled: false },
-  { value: "monarchy", label: "Monarchy", disabled: false },
-  { value: "mono", label: "Mono", disabled: false },
-  { value: "mpchess", label: "Mpchess", disabled: false },
-  { value: "pirouetti", label: "Pirouetti", disabled: false },
-  { value: "pixel", label: "Pixel", disabled: false },
-  { value: "reillycraig", label: "Reillycraig", disabled: false },
-  { value: "riohacha", label: "Riohacha", disabled: false },
-  { value: "shapes", label: "Shapes", disabled: false },
-  { value: "spatial", label: "Spatial", disabled: false },
-  { value: "staunty", label: "Staunty", disabled: false },
-  { value: "tatiana", label: "Tatiana", disabled: false },
-];
+export const PIECE_SET_OPTIONS_MAP = {
+  alpha: { label: "Alpha", disabled: false },
+  anarcandy: { label: "Anarcandy", disabled: false },
+  caliente: { label: "Caliente", disabled: false },
+  california: { label: "California", disabled: false },
+  cardinal: { label: "Cardinal", disabled: false },
+  cburnett: { label: "Cburnett", disabled: false },
+  celtic: { label: "Celtic", disabled: false },
+  chess7: { label: "Chess7", disabled: false },
+  chessnut: { label: "Chessnut", disabled: false },
+  companion: { label: "Companion", disabled: false },
+  cooke: { label: "Cooke", disabled: false },
+  disguised: { label: "Disguised", disabled: false },
+  dubrovny: { label: "Dubrovny", disabled: false },
+  fantasy: { label: "Fantasy", disabled: false },
+  fresca: { label: "Fresca", disabled: false },
+  gioco: { label: "Gioco", disabled: false },
+  governor: { label: "Governor", disabled: false },
+  horsey: { label: "Horsey", disabled: false },
+  icpieces: { label: "Icpieces", disabled: false },
+  "kiwen-suwi": { label: "Kiwen Suwi", disabled: false },
+  kosal: { label: "Kosal", disabled: false },
+  leipzig: { label: "Leipzig", disabled: false },
+  letter: { label: "Letter", disabled: false },
+  libra: { label: "Libra", disabled: false },
+  maestro: { label: "Maestro", disabled: false },
+  merida: { label: "Merida", disabled: false },
+  monarchy: { label: "Monarchy", disabled: false },
+  mono: { label: "Mono", disabled: false },
+  mpchess: { label: "Mpchess", disabled: false },
+  pirouetti: { label: "Pirouetti", disabled: false },
+  pixel: { label: "Pixel", disabled: false },
+  reillycraig: { label: "Reillycraig", disabled: false },
+  riohacha: { label: "Riohacha", disabled: false },
+  shapes: { label: "Shapes", disabled: false },
+  spatial: { label: "Spatial", disabled: false },
+  staunty: { label: "Staunty", disabled: false },
+  tatiana: { label: "Tatiana", disabled: false },
+} as const;
 
 export const PIECE_SVG_SYMBOLS = [
   "bB",
@@ -135,5 +112,9 @@ export const MONO_PIECE_SVG_SYMBOLS = ["B", "K", "N", "P", "Q", "R"] as const;
 
 export const PIECE_SET_SVGS = import.meta.glob("/src/assets/pieces/**/*.svg", {
   query: "?raw",
+  import: "default",
+});
+
+export const PIECE_SET_PNGS = import.meta.glob("/src/assets/pieces/**/*.png", {
   import: "default",
 });

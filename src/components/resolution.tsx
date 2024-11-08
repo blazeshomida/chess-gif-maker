@@ -1,4 +1,4 @@
-import { RESOLUTION_OPTIONS } from "~/lib/constants";
+import { DEFAULT_RESOLUTION_OPTION, RESOLUTION_OPTIONS } from "~/lib/constants";
 import type { ResolutionOption } from "~/lib/types";
 import {
   Select,
@@ -11,7 +11,14 @@ import {
 } from "./ui/select";
 import { useSettings } from "./settings-provider";
 import { SettingsSectionLayout } from "./section-layout";
-import { getResolutionOption } from "~/lib/utils/select-options";
+
+function getResolutionOption(resolutionValue: number | null): ResolutionOption {
+  return (
+    RESOLUTION_OPTIONS.flatMap((group) => group.options).find(
+      (option) => option.value === resolutionValue,
+    ) || DEFAULT_RESOLUTION_OPTION
+  );
+}
 
 export function Resolution() {
   const { state, setState } = useSettings();

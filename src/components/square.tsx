@@ -1,14 +1,20 @@
 import type { Piece } from "chess.js";
 import { Show } from "solid-js";
-import { queryPieceSVG } from "~/lib/utils/board";
 import { useSettings } from "./settings-provider";
+import { getPieceImg } from "~/lib/utils/board";
 
 export function Square(props: {
   piece: Piece | null;
   currentColor: "light" | "dark";
 }) {
   const { state } = useSettings();
-  const query = queryPieceSVG({ piece: props.piece });
+  const path = () =>
+    props.piece
+      ? getPieceImg({
+          piece: props.piece,
+          pieceSet: state.pieceSet,
+        })
+      : null;
 
   return (
     <div
@@ -17,14 +23,8 @@ export function Square(props: {
         "background-color": state.colors[props.currentColor],
       }}
     >
-      <Show when={query.isSuccess}>
-        <span
-          class="opacity-0"
-          style={{
-            animation: "fade 150ms ease-in-out forwards",
-          }}
-          innerHTML={query.data}
-        />
+      <Show when={path()}>
+        {(path) => <img src={path()} alt="Piece" class="size-full" />}
       </Show>
     </div>
   );

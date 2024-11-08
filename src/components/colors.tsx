@@ -1,11 +1,5 @@
-import { createSignal } from "solid-js";
-import {
-  DEFAULT_COLOR_THEME_OPTION,
-  COLOR_THEMES,
-  COLOR_THEME_OPTIONS,
-  CUSTOM_COLOR_THEME_OPTION,
-} from "~/lib/constants";
-import type { ColorThemeOption } from "~/lib/types";
+import { COLOR_THEME_OPTIONS_MAP, COLOR_THEMES } from "~/lib/constants";
+import type { ColorTheme } from "~/lib/types";
 import { ColorPicker } from "./ui/color-picker";
 import {
   Select,
@@ -17,7 +11,8 @@ import {
 } from "./ui/select";
 import { useSettings } from "./settings-provider";
 import { SettingsSectionLayout } from "./section-layout";
-import { getColorThemeOption } from "~/lib/utils/select-options";
+
+const colorThemes = Object.keys(COLOR_THEME_OPTIONS_MAP) as ColorTheme[];
 
 export function Colors() {
   const { state, setState } = useSettings();
@@ -25,30 +20,31 @@ export function Colors() {
   return (
     <SettingsSectionLayout title="Colors">
       <div class="grid gap-4">
-        <Select
-          value={getColorThemeOption(state["color-theme"])}
+        <Select<ColorTheme>
+          value={state["color-theme"]}
           onChange={(option) => {
             if (!option) return;
-            setState("color-theme", option.value);
-            if (option.value !== "CUSTOM") {
-              setState("colors", COLOR_THEMES[option.value]);
+            setState("color-theme", option);
+            if (option !== "CUSTOM") {
+              setState("colors", COLOR_THEMES[option]);
             }
           }}
-          options={COLOR_THEME_OPTIONS}
-          optionValue="value"
-          optionTextValue="label"
-          optionDisabled="disabled"
+          options={colorThemes}
+          optionTextValue={(option) => COLOR_THEME_OPTIONS_MAP[option].label}
+          optionDisabled={(option) => COLOR_THEME_OPTIONS_MAP[option].disabled}
           placeholder="Select a color theme..."
           itemComponent={(props) => (
             <SelectItem item={props.item}>
-              {props.item.rawValue.label}
+              {COLOR_THEME_OPTIONS_MAP[props.item.rawValue].label}
             </SelectItem>
           )}
         >
           <div class="grid gap-2">
             <SelectTrigger aria-label="Color Theme">
-              <SelectValue<ColorThemeOption>>
-                {(state) => state.selectedOption().label}
+              <SelectValue<ColorTheme>>
+                {(state) =>
+                  COLOR_THEME_OPTIONS_MAP[state.selectedOption()].label
+                }
               </SelectValue>
             </SelectTrigger>
             <SelectDescription>
@@ -67,7 +63,7 @@ export function Colors() {
               value={state.colors.light}
               onInput={(e) => {
                 setState("colors", "light", e.target.value);
-                setState("color-theme", CUSTOM_COLOR_THEME_OPTION.value);
+                setState("color-theme", "CUSTOM");
               }}
             />
             <ColorPicker
@@ -75,7 +71,7 @@ export function Colors() {
               value={state.colors.dark}
               onInput={(e) => {
                 setState("colors", "dark", e.target.value);
-                setState("color-theme", CUSTOM_COLOR_THEME_OPTION.value);
+                setState("color-theme", "CUSTOM");
               }}
             />
           </div>

@@ -1,4 +1,5 @@
-import type { ColorTheme } from "./constants";
+import type { Color } from "chess.js";
+import { PIECE_SET_OPTIONS_MAP, type COLOR_THEMES } from "./constants";
 
 export type SelectOption<T> = {
   value: T;
@@ -18,13 +19,15 @@ type ColorsOptionValue = {
 
 export type ResolutionOption = SelectOption<number>;
 export type ResolutionGroup = SelectGroup<number>;
-export type ColorThemeOption = SelectOption<ColorTheme | "CUSTOM">;
-export type PieceSetOption = SelectOption<string>;
+export type ColorTheme = keyof typeof COLOR_THEMES | "CUSTOM";
+export type PieceSet = keyof typeof PIECE_SET_OPTIONS_MAP;
 
 export type SettingsState = {
+  side: Color;
+  pgn: string;
   delay: number;
   colors: ColorsOptionValue;
-  "color-theme": string;
+  "color-theme": ColorTheme;
   resolution: number;
-  pieceSet: string;
+  pieceSet: PieceSet;
 };

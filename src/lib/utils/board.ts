@@ -1,10 +1,5 @@
 import { SQUARES, type Chess, type Color, type PieceSymbol } from "chess.js";
-import { PIECE_SET_SVGS } from "../constants";
-import { createQuery } from "@tanstack/solid-query";
-import { useSettings } from "~/components/settings-provider";
 import { ChessGif } from "../chess-gif";
-import { DOMParser, type Element, XMLSerializer } from "@xmldom/xmldom";
-import { raise } from "./raise";
 
 type BoardArray = ReturnType<(typeof Chess)["prototype"]["board"]>;
 type Piece = {
@@ -19,10 +14,9 @@ type CreateBoardOptions = {
     dark: string;
   };
   boardArray: BoardArray;
-  canvas: HTMLCanvasElement | OffscreenCanvas;
 };
 
-export function createBoard({
+export async function createBoard({
   resolution,
   colors: { light, dark },
   boardArray,
@@ -32,27 +26,37 @@ export function createBoard({
   const squareSize = resolution / 8;
 
   if (context) {
-    SQUARES.forEach((square) => {
-      const { x: file, y: rank } = ChessGif.squareToCoords(square);
-      const piece = boardArray[rank][file];
-      drawSquare({ context, file, rank, colors: { light, dark }, squareSize });
-      if (piece) {
-        drawPiece({
+    await Promise.all(
+      SQUARES.map(async (square) => {
+        const { x: file, y: rank } = ChessGif.squareToCoords(square);
+        const piece = boardArray[rank][file];
+        drawSquare({
           context,
           file,
           rank,
+          colors: { light, dark },
           squareSize,
-          piece: {
-            type: piece.type,
-            color: piece.color,
-          },
-          pieceSet: "alpha",
         });
-      }
-    });
+        if (piece) {
+          await drawPiece({
+            context,
+            file,
+            rank,
+            squareSize,
+            piece: {
+              type: piece.type,
+              color: piece.color,
+            },
+            pieceSet: "alpha",
+          });
+        }
+      }),
+    );
   }
 
-  return canvas;
+  const blob = await canvas.convertToBlob();
+  const url = URL.createObjectURL(blob);
+  window.open(url);
 }
 
 function drawSquare({
@@ -72,6 +76,7 @@ function drawSquare({
   squareSize: number;
 }) {
   context.fillStyle = (Math.abs(rank - 8 + 1) + file) % 2 === 0 ? dark : light;
+  console.log(dark);
   context.fillRect(
     file * squareSize,
     rank * squareSize,
@@ -80,7 +85,7 @@ function drawSquare({
   );
 }
 
-async function getPieceSVG({
+export function getPieceImg({
   pieceSet,
   piece,
 }: {
@@ -88,24 +93,8 @@ async function getPieceSVG({
   piece: Piece;
 }) {
   const pieceSymbol = piece ? ChessGif.getPieceSymbol(pieceSet, piece) : null;
-  const path = `/src/assets/pieces/${pieceSet}/${pieceSymbol}.svg`;
-  const content = (await PIECE_SET_SVGS[path]()) as string;
-  const doc = new DOMParser().parseFromString(content, "image/svg+xml");
-  const svg = doc.getElementsByTagName("svg")[0] as Element;
-  if (!svg) raise(`SVG not found for ${path}`);
-  svg.setAttribute("width", "100%");
-  svg.setAttribute("height", "100%");
-  const serializer = new XMLSerializer();
-  return serializer.serializeToString(svg);
-}
-
-export function queryPieceSVG({ piece }: { piece: Piece | null }) {
-  const { state } = useSettings();
-  return createQuery(() => ({
-    queryKey: ["piece", state.pieceSet, piece],
-    queryFn: () => getPieceSVG({ pieceSet: state.pieceSet, piece: piece! }),
-    enabled: !!piece,
-  }));
+  const path = `/assets/pieces/${pieceSet}/pngs/${pieceSymbol}.png`;
+  return path;
 }
 
 async function drawPiece({
@@ -123,28 +112,26 @@ async function drawPiece({
   pieceSet: string;
   piece: Piece;
 }) {
-  const svgContent = await getPieceSVG({ pieceSet, piece });
-  if (!svgContent) return;
-
-  // Convert SVG content to Blob and URL
-  const svgBlob = new Blob([svgContent], { type: "image/svg+xml" });
-  const url = URL.createObjectURL(svgBlob);
+  const path = getPieceImg({ pieceSet, piece });
+  if (!path) return;
 
   const img = new Image(squareSize, squareSize);
-  img.src = url;
+  img.src = path;
 
-  img.onload = () => {
-    context.drawImage(
-      img,
-      file * squareSize,
-      rank * squareSize,
-      squareSize,
-      squareSize,
-    );
-    URL.revokeObjectURL(url); // Clean up
-  };
+  return new Promise((resolve, reject) => {
+    img.onload = () => {
+      context.drawImage(
+        img,
+        file * squareSize,
+        rank * squareSize,
+        squareSize,
+        squareSize,
+      );
+      resolve(img);
+    };
 
-  img.onerror = (err) => {
-    console.error("Error loading SVG:", err);
-  };
+    img.onerror = (err) => {
+      reject(err);
+    };
+  });
 }

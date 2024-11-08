@@ -1,7 +1,22 @@
 import type { Piece, Square } from "chess.js";
+import type { PieceSet } from "./types";
+
+type GifOptions = {
+  pgn: string;
+  resolution: number;
+  colors: {
+    light: string;
+    dark: string;
+  };
+  delay: number;
+  pieceSet: PieceSet;
+};
 
 export class ChessGif {
-  constructor() {}
+  #options: GifOptions;
+  constructor(options: GifOptions) {
+    this.#options = options;
+  }
 
   static squareToCoords(square: Square) {
     const [file, rank] = square;
