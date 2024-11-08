@@ -27,9 +27,6 @@
     "tailwindcss-animate": "^1.0.7",
     "vinxi": "^0.4.2"
   },
-  "engines": {
-    "node": ">=18"
-  },
   "devDependencies": {
     "@types/gif-encoder": "^0.7.4"
   }
